@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		ul,li{
+			padding: 0;
+			margin: 0;
+			list-style-type: none;
+		}
+		.box{
+			width: 560px;
+			height: 380px;
+			margin: 100px auto 0;
+			border: 1px solid #000;
+			display: flex;
+			/* 不能再这里添加overflow，因为这样的话3d效果就被切割掉了 */
+			/* overflow: hidden; */
+		}
+		/* 
+		也不能添加给UL 因为UL一旦进行3D转换了之后的话高度就直接变成0了，overflow了之后就什么都看不到了 */
+		ul{
+			flex: 1;
+			position: relative;
+			transform: rotateX(0deg);
+			transform-style: preserve-3d;
+			transition: all 1s;
+		}
+		ul li{
+			/* LI的宽度最好设置成百分百 */
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			left: 0;
+			top: 0;
+			overflow: hidden;
+		}
+		ul li:nth-child(1){
+			transform: rotateX(90deg) translateZ(190px);
+		}
+		ul li:nth-child(2){
+			transform: rotateX(-90deg) translateZ(190px);
+		}
+		ul li:nth-child(3){
+			transform: rotateX(-180deg) translateZ(190px);
+		}
+		ul li:nth-child(4){
+			transform: translateZ(190px);
+		}
+		/* 让图片往左走对应的位置，然后拼接成一个大图 */
+		ul:nth-child(2) img{
+			margin-left: -140px;
+		}
+		ul:nth-child(3) img{
+			margin-left: -280px;
+		}
+		ul:nth-child(4) img{
+			margin-left: -420px;
+		}
+		.btn_wrap{
+			width: 760px;
+			height: 1px;
+			margin: 0 auto;
+			position: relative;
+			top: -240px;
+		}
+		.btn_wrap a{
+			width: 100px;
+			height: 100px;
+			background-color: green;
+			float: left;
+			line-height: 100px;
+			text-align: center;
+			border-radius: 5px;
+			box-shadow: 0 0 2px 2px;
+			text-decoration: none;
+			color: #fff;
+		}
+		.btn_wrap a:nth-child(2){
+			float: right;
+		}
+	</style>
+</head>
+<body>
+	<div class="box">
+		<!-- 怎样才能实现切割效果  其实是有四个盒子里面的 图片拼接成的一张大图 -->
+		<ul>
+			<li><img src="imgs/01.jpg" alt=""></li>
+			<li><img src="imgs/02.jpg" alt=""></li>
+			<li><img src="imgs/03.jpg" alt=""></li>
+			<li><img src="imgs/04.jpg" alt=""></li>
+		</ul>
+		<ul>
+			<li><img src="imgs/01.jpg" alt=""></li>
+			<li><img src="imgs/02.jpg" alt=""></li>
+			<li><img src="imgs/03.jpg" alt=""></li>
+			<li><img src="imgs/04.jpg" alt=""></li>
+		</ul>
+		<ul>
+			<li><img src="imgs/01.jpg" alt=""></li>
+			<li><img src="imgs/02.jpg" alt=""></li>
+			<li><img src="imgs/03.jpg" alt=""></li>
+			<li><img src="imgs/04.jpg" alt=""></li>
+		</ul>
+		<ul>
+			<li><img src="imgs/01.jpg" alt=""></li>
+			<li><img src="imgs/02.jpg" alt=""></li>
+			<li><img src="imgs/03.jpg" alt=""></li>
+			<li><img src="imgs/04.jpg" alt=""></li>
+		</ul>
+	</div>
+	<!-- 按钮放在box的外面，不要放在里面 不能让他污染UL的分配 -->
+	<div class="btn_wrap">
+		<a href="#">点我点我</a>
+		<a href="#">点我点我</a>
+	</div>
+	<script type="text/javascript" src="jquery-3.0.0.min.js"></script>
+	<script type="text/javascript">
+	$(function(){
+		// 思路：当点击的时候 设置一个增量 每一次点击都是基于这个增量在rotateX90度
+		// 这个就是增量
+		var num = 0;
+		var flag = true;
+		$('.btn_wrap a:eq(1)').click(function(event) {	
+			if(flag){
+				// 过河拆桥
+				flag = false;
+				//num += 90;
+				// 每一次点击让累加一次
+				num ++;
+				//$('ul').css('transform','rotateX('+num*90+'deg)');
+
+				$('ul').each(function(index, el) {
+					//  遍历谁就给谁rotateX 并且让这个当前UL的过渡延迟时间等于index*200毫秒
+					$(el).css({
+						'transform':'rotateX('+num*90+'deg)',
+						'transition':'all 1s '+index * 200+'ms'
+					})
+
+				});
+			}
+		});
+		// 当最后一个UL的过渡执行完了之后触发的事件
+		$('ul').last().on('transitionend',function(){
+			// 重新修桥，以便下一次点击
+			flag = true;
+		})
+
+		$('.btn_wrap a:eq(0)').click(function(event) {
+			if(flag){
+				// 过河拆桥
+				flag = false;
+				//num += 90;
+				// 每一次点击让累加一次
+				num --;
+				// $('ul').css('transform','rotateX('+num*90+'deg)');
+				
+				$('ul').each(function(index, el) {
+					//  遍历谁就给谁rotateX 并且让这个当前UL的过渡延迟时间等于index*200毫秒
+					$(el).css({
+						'transform':'rotateX('+num*90+'deg)',
+						'transition':'all 1s '+index * 200+'ms'
+					})
+
+				});
+			}
+		});
+
+
+
+		
+	})
+	</script>
+</body>
+</html>
